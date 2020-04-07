@@ -127,6 +127,14 @@ public class SOCKS5ProxySocket: ProxySocket {
             }
         case .readingMethods:
             // TODO: check for 0x00 in read data
+            let methods =  [Uint8](data)
+            guard methods[0] == 0 else {
+                let response = Data(bytes: [0x05,0xff])
+                write(data: response)
+                readStatus = 0
+                self.disconnect()
+                return
+            }
 
             let response = Data([0x05, 0x00])
             // we would not be able to read anything before the data is written out, so no need to handle the dataWrote event.
